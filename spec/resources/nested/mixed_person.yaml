@@ -1,0 +1,8 @@
+definitions:
+  greeting:
+    hi: "Drew"
+
+greeting:
+  $ref: "#/definitions/greeting"
+stats:
+  $ref: "file:stats.yaml"

@@ -1,0 +1,6 @@
+definitions:
+  person:
+    name: "Drew"
+
+person:
+  $ref: "#/definitions/person"

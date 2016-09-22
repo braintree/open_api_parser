@@ -1,0 +1,128 @@
+swagger: "2.0"
+
+info:
+  title: Simple API overview
+  version: 1
+
+produces:
+  - application/json
+consumes:
+  - application/json
+
+definitions:
+  createAnimal:
+    required:
+      - name
+      - legs
+    properties:
+      name:
+        type: string
+      legs:
+        type: integer
+
+  validResponse:
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - ok
+
+  errorResponse:
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - bad
+
+paths:
+  /animals:
+    post:
+      operationId: createAnimal
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "/definitions/createAnimal"
+      responses:
+        201:
+          description: Valid create
+          schema:
+            $ref: "/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "/definitions/errorResponse"
+
+  /animals/{id}:
+    get:
+      operationId: getAnimal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: size
+          in: query
+          required: false
+          type: string
+          enum:
+            - small
+            - large
+        - name: age
+          in: query
+          required: false
+          type: integer
+        - name: tag
+          in: query
+          required: false
+          type: string
+        - name: User-Id
+          in: header
+          required: false
+          type: integer
+      responses:
+        200:
+          description: Valid create
+          schema:
+            $ref: "/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "/definitions/errorResponse"
+
+  /people/{id}:
+    get:
+      operationId: getPerson
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Valid create
+          schema:
+            $ref: "/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "/definitions/errorResponse"
+
+  /headers:
+    get:
+      operationId: getHeaders
+      responses:
+        200:
+          description: Valid create
+          schema:
+            $ref: "/definitions/validResponse"
+          headers:
+            X-My-Header:
+              type: string
+              enum:
+                - "my value"
