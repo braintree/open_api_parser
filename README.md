@@ -1,5 +1,7 @@
 # OpenApiParser
 
+[![Build Status](https://travis-ci.org/braintree/open_api_parser.svg?branch=master)](https://travis-ci.org/braintree/open_api_parser)
+
 A gem for parsing Open API specifications.
 
 ## Usage
