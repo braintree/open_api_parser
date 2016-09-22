@@ -20,7 +20,7 @@ module OpenApiParser
         body_param = parameters.detect { |param| param["in"] == "body" }
         return restrictive_schema if body_param.nil?
 
-        body_param["schema"]
+        body_param.fetch("schema", restrictive_schema)
       end
 
       def header_schema
@@ -47,7 +47,7 @@ module OpenApiParser
         response = response_from_status(status)
         return restrictive_schema if response.nil?
 
-        response["schema"]
+        response.fetch("schema", restrictive_schema)
       end
 
       def response_header_schema(status)

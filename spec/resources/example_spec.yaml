@@ -94,6 +94,20 @@ paths:
           description: Error response
           schema:
             $ref: "/definitions/errorResponse"
+    delete:
+      operationId: deleteAnimal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Valid create
+        default:
+          description: Error response
+          schema:
+            $ref: "/definitions/errorResponse"
 
   /people/{id}:
     get:

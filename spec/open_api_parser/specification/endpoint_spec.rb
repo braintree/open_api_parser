@@ -169,6 +169,15 @@ RSpec.describe OpenApiParser::Specification::Root do
         "properties" => {}
       })
     end
+
+    it "returns a restrictive schema if no schema is specified for a known code" do
+      endpoint = root.endpoint("/animals/1", "delete")
+
+      expect(endpoint.response_body_schema(204)).to eq({
+        "additionalProperties" => false,
+        "properties" => {}
+      })
+    end
   end
 
   describe "response_body_header" do
