@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/braintree/open_api_parser.svg?branch=master)](https://travis-ci.org/braintree/open_api_parser)
 
-A gem for parsing Open API specifications.
+A gem for parsing [Open API](https://openapis.org/) specifications.
 
 ## Usage
 
