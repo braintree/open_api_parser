@@ -9,4 +9,5 @@
 /tmp/
 /tags
 /.ruby-version
+/vendor/bundle
 /open_api_parser*.gem
