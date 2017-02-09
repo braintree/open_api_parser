@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+* Handle invalid URLs in `endpoint`
+
 ## 1.1.0
 
 * Bump JsonSchema version
