@@ -32,6 +32,12 @@ RSpec.describe OpenApiParser::Specification::Root do
 
       expect(endpoint.raw.fetch("operationId")).to eq("getAnimal")
     end
+
+    it "handles invalid URLs" do
+      endpoint = root.endpoint("&&^^..%", "get")
+
+      expect(endpoint).to be_nil
+    end
   end
 
   describe "raw" do

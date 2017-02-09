@@ -24,6 +24,8 @@ module OpenApiParser
         return nil if method_details.nil?
 
         Endpoint.new(path_details.first, method_details.first, method_details.last)
+      rescue URI::InvalidURIError
+        nil
       end
 
       def to_json
