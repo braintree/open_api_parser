@@ -38,6 +38,12 @@ RSpec.describe OpenApiParser::Specification::Root do
 
       expect(endpoint).to be_nil
     end
+
+    it "matches the expected path/operation when paths have significant components in common" do
+      endpoint = root.endpoint("/animals/search", "post")
+
+      expect(endpoint.raw.fetch("operationId")).to eq("searchAnimals")
+    end
   end
 
   describe "raw" do
