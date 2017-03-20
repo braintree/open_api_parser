@@ -25,8 +25,9 @@ module OpenApiParser
           if !method_details.nil?
             return Endpoint.new(path_details.first, method_details.first, method_details.last)
           end
-
         end
+
+        return nil
 
       rescue URI::InvalidURIError
         nil
