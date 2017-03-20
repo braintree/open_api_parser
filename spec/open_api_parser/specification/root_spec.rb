@@ -44,6 +44,11 @@ RSpec.describe OpenApiParser::Specification::Root do
 
       expect(endpoint.raw.fetch("operationId")).to eq("searchAnimals")
     end
+
+    it "handles a missing method on a valid URL" do
+      endpoint = root.endpoint("/headers", "head")
+      expect(endpoint).to be_nil
+    end
   end
 
   describe "raw" do
