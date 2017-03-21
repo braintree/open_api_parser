@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+* Match path to correct endpoint when many similar paths exist
+
 ## 1.1.1
 
 * Handle invalid URLs in `endpoint`
