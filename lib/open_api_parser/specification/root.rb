@@ -11,24 +11,19 @@ module OpenApiParser
         uri = URI.parse(path)
         requested_path = uri.path.gsub(/\..+\z/, "")
 
-        matching_paths = @raw["paths"].select do |path_name, path|
-          requested_path =~ to_pattern(path_name)
+        matching_path_details = @raw["paths"].detect do |path_name, path|
+          requested_path =~ to_pattern(path_name) &&
+            path.keys.any? { |method| matching_method?(method, request_method) }
         end
-        return nil if matching_paths.empty?
+        return nil if matching_path_details.nil?
 
-        matching_paths.each do |path_details|
-          path = path_details.last
+        matching_name, matching_path = matching_path_details
 
-          method_details = path.detect do |method, schema|
-            method.to_s == request_method.downcase
-          end
-          if !method_details.nil?
-            return Endpoint.new(path_details.first, method_details.first, method_details.last)
-          end
+        method_details = matching_path.detect do |method, schema|
+          matching_method?(method, request_method)
         end
 
-        return nil
-
+        Endpoint.new(matching_name, method_details.first, method_details.last)
       rescue URI::InvalidURIError
         nil
       end
@@ -38,6 +33,10 @@ module OpenApiParser
       end
 
       private
+
+      def matching_method?(method, request_method)
+        method.to_s == request_method.downcase
+      end
 
       def to_pattern(path_name)
         Regexp.new("\\A" + path_name.gsub(/\{[^}]+\}/, "[^/]+") + "\\z")
