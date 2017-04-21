@@ -186,7 +186,6 @@ RSpec.describe OpenApiParser::Specification::Root do
 
       expect(endpoint.response_header_schema(200)).to eq({
         "additionalProperties" => true,
-        "required" => ["X_MY_HEADER"],
         "properties" => {
           "X_MY_HEADER" => {
             "type" => "string",
@@ -201,7 +200,6 @@ RSpec.describe OpenApiParser::Specification::Root do
 
       expect(endpoint.response_header_schema("200")).to eq({
         "additionalProperties" => true,
-        "required" => ["X_MY_HEADER"],
         "properties" => {
           "X_MY_HEADER" => {
             "type" => "string",

@@ -60,7 +60,6 @@ module OpenApiParser
 
         permissive_schema.tap do |schema|
           schema["properties"] = header_properties
-          schema["required"] = header_properties.keys
         end
       end
 
