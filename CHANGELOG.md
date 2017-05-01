@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+* Make all response headers optional
+
 ## 1.1.2
 
 * Match path to correct endpoint when many similar paths exist
