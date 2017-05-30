@@ -2,6 +2,7 @@ require "json"
 require "uri"
 require "yaml"
 
+require "addressable/uri"
 require "json_schema"
 
 require "open_api_parser/document"

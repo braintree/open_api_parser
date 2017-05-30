@@ -16,7 +16,7 @@ module OpenApiParser
 
     def escaped_pointer
       if @raw_pointer.start_with?("#")
-        URI.decode(@raw_pointer[1..-1])
+        Addressable::URI.unencode(@raw_pointer[1..-1])
       else
         @raw_pointer
       end
