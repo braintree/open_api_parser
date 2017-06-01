@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+* Use `Addressable::URI.unencode` instead of obsoleted `URI.decode`
+
 ## 1.2.0
 
 * Make all response headers optional
