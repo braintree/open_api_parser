@@ -53,7 +53,7 @@ RSpec.describe OpenApiParser::Specification::Root do
 
   describe "raw" do
     it "exposes the raw schema" do
-      expect(root.raw.fetch("swagger")).to eq("2.0")
+      expect(root.raw.fetch("openapi")).to eq("3.0.0")
     end
   end
 
@@ -62,7 +62,7 @@ RSpec.describe OpenApiParser::Specification::Root do
       json = root.to_json
       decoded = JSON.parse(json)
 
-      expect(decoded.fetch("swagger")).to eq("2.0")
+      expect(decoded.fetch("openapi")).to eq("3.0.0")
     end
   end
 end

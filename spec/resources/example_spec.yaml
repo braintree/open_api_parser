@@ -1,53 +1,8 @@
-swagger: "2.0"
-
+openapi: 3.0.0
+servers: []
 info:
   title: Simple API overview
-  version: 1
-
-produces:
-  - application/json
-consumes:
-  - application/json
-
-definitions:
-  createAnimal:
-    required:
-      - name
-      - legs
-    properties:
-      name:
-        type: string
-      legs:
-        type: integer
-
-  validResponse:
-    required:
-      - status
-    properties:
-      status:
-        type: string
-        enum:
-          - ok
-
-  searchResponse:
-    required:
-      - name
-      - legs
-    properties:
-      name:
-        type: string
-      legs:
-        type: integer
-
-  errorResponse:
-    required:
-      - status
-    properties:
-      status:
-        type: string
-        enum:
-          - bad
-
+  version: '1'
 paths:
   /animals:
     post:
@@ -57,114 +12,181 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "/definitions/createAnimal"
+            $ref: /components/schemas/createAnimal
       responses:
-        201:
+        '201':
           description: Valid create
-          schema:
-            $ref: "/definitions/validResponse"
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/validResponse
         default:
           description: Error response
-          schema:
-            $ref: "/definitions/errorResponse"
-
-  /animals/{id}:
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/errorResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: /components/schemas/createAnimal
+        required: true
+  '/animals/{id}':
     get:
       operationId: getAnimal
       parameters:
         - name: id
           in: path
           required: true
-          type: integer
+          schema:
+            type: integer
         - name: size
           in: query
           required: false
-          type: string
-          enum:
-            - small
-            - large
+          schema:
+            type: string
+            enum:
+              - small
+              - large
         - name: age
           in: query
           required: false
-          type: integer
+          schema:
+            type: integer
         - name: tag
           in: query
           required: false
-          type: string
+          schema:
+            type: string
         - name: User-Id
           in: header
           required: false
-          type: integer
-      responses:
-        200:
-          description: Valid create
           schema:
-            $ref: "/definitions/validResponse"
+            type: integer
+      responses:
+        '200':
+          description: Valid create
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/validResponse
         default:
           description: Error response
-          schema:
-            $ref: "/definitions/errorResponse"
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/errorResponse
     delete:
       operationId: deleteAnimal
       parameters:
         - name: id
           in: path
           required: true
-          type: integer
+          schema:
+            type: integer
       responses:
-        204:
+        '204':
           description: Valid create
         default:
           description: Error response
-          schema:
-            $ref: "/definitions/errorResponse"
-
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/errorResponse
   /animals/search:
     post:
       operationId: searchAnimals
-      parameters:
-        - name: name
-          in: body
-          required: true
-          type: string
       responses:
-        200:
+        '200':
           description: Search results
-          schema:
-            $ref: "/definitions/searchResponse"
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/searchResponse
         default:
           description: Error response
-          schema:
-            $ref: "/definitions/errorResponse"
- 
-  /people/{id}:
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/errorResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+  '/people/{id}':
     get:
       operationId: getPerson
       parameters:
         - name: id
           in: path
           required: true
-          type: string
-      responses:
-        200:
-          description: Valid create
           schema:
-            $ref: "/definitions/validResponse"
+            type: string
+      responses:
+        '200':
+          description: Valid create
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/validResponse
         default:
           description: Error response
-          schema:
-            $ref: "/definitions/errorResponse"
-
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/errorResponse
   /headers:
     get:
       operationId: getHeaders
       responses:
-        200:
+        '200':
           description: Valid create
-          schema:
-            $ref: "/definitions/validResponse"
           headers:
             X-My-Header:
-              type: string
-              enum:
-                - "my value"
+              schema:
+                type: string
+                enum:
+                  - my value
+          content:
+            application/json:
+              schema:
+                $ref: /components/schemas/validResponse
+components:
+  schemas:
+    createAnimal:
+      required:
+        - name
+        - legs
+      properties:
+        name:
+          type: string
+        legs:
+          type: integer
+    validResponse:
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+    searchResponse:
+      required:
+        - name
+        - legs
+      properties:
+        name:
+          type: string
+        legs:
+          type: integer
+    errorResponse:
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - bad

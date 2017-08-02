@@ -43,7 +43,9 @@ RSpec.describe OpenApiParser::Specification::Root do
         "additionalProperties" => true,
         "properties" => {
           "USER_ID" => {
-            "type" => "integer"
+            "schema" => {
+              "type" => "integer"
+            }
           }
         }
       })
@@ -68,7 +70,9 @@ RSpec.describe OpenApiParser::Specification::Root do
         "required" => ["id"],
         "properties" => {
           "id" => {
-            "type" => "integer"
+            "schema" => {
+              "type" => "integer"
+            }
           }
         }
       })
@@ -92,17 +96,23 @@ RSpec.describe OpenApiParser::Specification::Root do
         "additionalProperties" => false,
         "properties" => {
           "size" => {
-            "type" => "string",
-            "enum" => [
-              "small",
-              "large"
-            ]
+            "schema" => {
+              "type" => "string",
+              "enum" => [
+                "small",
+                "large"
+              ]
+            }
           },
           "age" => {
-            "type" => "integer"
+            "schema" => {
+              "type" => "integer"
+            }
           },
           "tag" => {
-            "type" => "string"
+            "schema" => {
+              "type" => "string"
+            }
           }
         }
       })
@@ -188,8 +198,10 @@ RSpec.describe OpenApiParser::Specification::Root do
         "additionalProperties" => true,
         "properties" => {
           "X_MY_HEADER" => {
-            "type" => "string",
-            "enum" => ["my value"]
+            "schema" => {
+              "type" => "string",
+              "enum" => ["my value"]
+            }
           }
         }
       })
@@ -202,8 +214,10 @@ RSpec.describe OpenApiParser::Specification::Root do
         "additionalProperties" => true,
         "properties" => {
           "X_MY_HEADER" => {
-            "type" => "string",
-            "enum" => ["my value"]
+            "schema" => {
+              "type" => "string",
+              "enum" => ["my value"]
+            }
           }
         }
       })
