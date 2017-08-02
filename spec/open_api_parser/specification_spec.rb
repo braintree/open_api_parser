@@ -6,7 +6,7 @@ RSpec.describe OpenApiParser::Specification do
       path = File.expand_path("../../resources/example_spec.yaml", __FILE__)
       specification = OpenApiParser::Specification.resolve(path)
 
-      expect(specification.raw.fetch("swagger")).to eq("2.0")
+      expect(specification.raw.fetch("openapi")).to eq("3.0.0")
     end
 
     it "fails on an invalid specification" do
