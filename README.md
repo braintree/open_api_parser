@@ -12,7 +12,7 @@ First, resolve a specification given an absolute file path.
 specification = OpenApiParser::Specification.resolve("/path/to/my/specification.yaml")
 ```
 
-When you `resolve` your file, all references will be expanded and inlined. The fully resolved specification will be validated against the Open API V2 meta schema. If you'd like to prevent meta schema validation, you can provide an option to do so.
+When you `resolve` your file, all references will be expanded and inlined. The fully resolved specification will be validated against the Open API V3 meta schema. If you'd like to prevent meta schema validation, you can provide an option to do so.
 
 ```ruby
 specification = OpenApiParser::Specification.resolve("/path/to/my/specification.yaml", validate_meta_schema: false)
@@ -34,18 +34,19 @@ OpenApiParser::Specification::Root.new({...})
 Pointers are resolved from the root of the document in which they appear. File references are resolved relative to the file in which they appear. Here's an example of each:
 
 ```yaml
-definitions:
-  person:
-    type: object
-    properties:
-      name:
-        type: string
-      age:
-        type: integer
+components:
+  schemas:
+    person:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
 
 info:
   person:
-    $ref: "/definitions/person"
+    $ref: "/components/schemas/person"
   other:
     $ref: "file:another/file.yaml"
 ```
