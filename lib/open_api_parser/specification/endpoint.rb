@@ -46,8 +46,9 @@ module OpenApiParser
       def response_body_schema(status)
         response = response_from_status(status)
         return restrictive_schema if response.nil?
-
-        response.fetch("schema", restrictive_schema)
+        return restrictive_schema if response['content'].nil?
+        content_type = response['content'].keys.first
+        response['content'][content_type].fetch("schema", restrictive_schema)
       end
 
       def response_header_schema(status)
@@ -112,7 +113,7 @@ module OpenApiParser
       def json_entry(schema, name, value)
         properties = schema["properties"]
 
-        if properties.has_key?(name) && properties[name]["type"] == "integer" && value =~ /\A[0-9]+\z/
+        if properties.has_key?(name) && properties[name]["schema"]["type"] == "integer" && value =~ /\A[0-9]+\z/
           {name => value.to_i}
         else
           {name => value}
