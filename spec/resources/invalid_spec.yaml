@@ -1,0 +1,50 @@
+swagger: "2.0"
+
+info:
+  title: Simple API overview
+  version: "1"
+
+produces:
+  - application/json
+consumes:
+  - application/json
+
+definitions:
+  validResponse:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - ok
+
+  errorResponse:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - bad
+
+paths:
+  /animals/{id}:
+    fake-http-method:
+      operationId: fakeHttpMethod
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Valid create
+          schema:
+            $ref: "#/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "#/definitions/errorResponse"

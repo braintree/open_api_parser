@@ -7,7 +7,7 @@ module OpenApiParser
 
       if validate_meta_schema
         meta_schema = JSON.parse(File.read(META_SCHEMA_PATH))
-        JsonSchema.parse!(meta_schema).validate!(raw_specification)
+        JSON::Validator.validate!(meta_schema, raw_specification)
       end
 
       OpenApiParser::Specification::Root.new(raw_specification)

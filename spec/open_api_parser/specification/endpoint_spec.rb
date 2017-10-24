@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe OpenApiParser::Specification::Root do
   def root
     @root ||= begin
-      path = File.expand_path("../../../resources/example_spec.yaml", __FILE__)
+      path = File.expand_path("../../../resources/valid_spec.yaml", __FILE__)
       OpenApiParser::Specification.resolve(path)
     end
   end
