@@ -1,0 +1,121 @@
+swagger: "2.0"
+
+info:
+  title: Simple API overview
+  version: "1"
+
+produces:
+  - application/json
+consumes:
+  - application/json
+
+definitions:
+  createAnimal:
+    type: object
+    required:
+      - name
+      - legs
+    properties:
+      name:
+        type: string
+      legs:
+        type: integer
+
+  validResponse:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - ok
+
+  errorResponse:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - bad
+
+  animalHierarchy:
+    type: object
+    properties:
+      descendants:
+        type: array
+        items:
+          $ref: '#/definitions/animalHierarchyDescendants'
+      name:
+        type: string
+
+  animalHierarchyDescendants:
+    type: object
+    properties:
+      descendants:
+        type: array
+        items:
+          $ref: '#/definitions/animalHierarchyDescendants'
+      name:
+        type: string
+
+paths:
+  /animals:
+    post:
+      operationId: createAnimal
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createAnimal"
+      responses:
+        201:
+          description: Valid create
+          schema:
+            $ref: "#/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "#/definitions/errorResponse"
+
+  /animals/{id}:
+    get:
+      operationId: getAnimal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Valid get animal
+          schema:
+            $ref: "#/definitions/validResponse"
+        default:
+          description: Error response
+          schema:
+            $ref: "#/definitions/errorResponse"
+
+  /animals/{id}/hierarchy:
+    get:
+      operationId: getAnimalHierarchy
+      description: View the ancestors and descendants hierarchy for a given animal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Valid get animal hierarchy
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/animalHierarchy'
+        default:
+          description: Error response
+          schema:
+            $ref: "#/definitions/errorResponse"

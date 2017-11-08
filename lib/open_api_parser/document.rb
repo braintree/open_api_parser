@@ -1,6 +1,6 @@
 module OpenApiParser
   class Document
-    def self.resolve(path, file_cache=OpenApiParser::FileCache.new)
+    def self.resolve(path, file_cache = OpenApiParser::FileCache.new)
       file_cache.get(path) do
         content = YAML.load_file(path)
         Document.new(path, content, file_cache).resolve
@@ -14,36 +14,36 @@ module OpenApiParser
     end
 
     def resolve
-      deeply_expand_refs(@content)
+      deeply_expand_refs(@content, nil)
     end
 
     private
 
-    def deeply_expand_refs(fragment)
-      fragment = expand_refs(fragment)
+    def deeply_expand_refs(fragment, cur_path)
+      fragment, cur_path = expand_refs(fragment, cur_path)
 
       if fragment.is_a?(Hash)
         fragment.reduce({}) do |hash, (k, v)|
-          hash.merge(k => deeply_expand_refs(v))
+          hash.merge(k => deeply_expand_refs(v, "#{cur_path}/#{k}"))
         end
       elsif fragment.is_a?(Array)
-        fragment.map { |e| deeply_expand_refs(e) }
+        fragment.map { |e| deeply_expand_refs(e, cur_path) }
       else
         fragment
       end
     end
 
-    def expand_refs(fragment)
-      if fragment.is_a?(Hash) && fragment.has_key?("$ref")
+    def expand_refs(fragment, cur_path)
+      if fragment.is_a?(Hash) && fragment.key?("$ref")
         ref = fragment["$ref"]
 
-        if ref =~ /\Afile:/
+        if ref.start_with?("file:")
           expand_file(ref)
         else
-          expand_pointer(ref)
+          expand_pointer(ref, cur_path)
         end
       else
-        fragment
+        [fragment, cur_path]
       end
     end
 
@@ -54,11 +54,15 @@ module OpenApiParser
       Document.resolve(absolute_path, @file_cache)
     end
 
-    def expand_pointer(ref)
+    def expand_pointer(ref, cur_path)
       pointer = OpenApiParser::Pointer.new(ref)
-      fragment = pointer.resolve(@content)
 
-      expand_refs(fragment)
+      if pointer.exists_in_path?(cur_path)
+        { "$ref" => ref }
+      else
+        fragment = pointer.resolve(@content)
+        expand_refs(fragment, cur_path + pointer.escaped_pointer)
+      end
     end
   end
 end

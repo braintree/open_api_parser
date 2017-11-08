@@ -12,7 +12,9 @@ module OpenApiParser
       end
     end
 
-    private
+    def exists_in_path?(path)
+      path.include?(escaped_pointer)
+    end
 
     def escaped_pointer
       if @raw_pointer.start_with?("#")
@@ -21,6 +23,8 @@ module OpenApiParser
         @raw_pointer
       end
     end
+
+    private
 
     def parse_token(token)
       if token =~ /\A\d+\z/
@@ -32,11 +36,7 @@ module OpenApiParser
 
     def tokens
       tokens = escaped_pointer[1..-1].split("/")
-
-      if @raw_pointer.end_with?("/")
-        tokens << ""
-      end
-
+      tokens << "" if @raw_pointer.end_with?("/")
       tokens.map do |token|
         parse_token(token)
       end
