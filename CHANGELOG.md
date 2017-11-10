@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+* Use `json-schema` to validate meta schema
+
 ## 1.2.1
 
 * Use `Addressable::URI.unencode` instead of obsoleted `URI.decode`
