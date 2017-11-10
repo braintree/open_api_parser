@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe OpenApiParser::Specification::Root do
   def root
     @root ||= begin
-      path = File.expand_path("../../../resources/example_spec.yaml", __FILE__)
+      path = File.expand_path("../../../resources/valid_spec.yaml", __FILE__)
       OpenApiParser::Specification.resolve(path)
     end
   end
@@ -13,6 +13,7 @@ RSpec.describe OpenApiParser::Specification::Root do
       endpoint = root.endpoint("/animals", "post")
 
       expect(endpoint.body_schema).to eq({
+        "type" => "object",
         "required" => ["name", "legs"],
         "properties" => {
           "name" => {
@@ -123,6 +124,7 @@ RSpec.describe OpenApiParser::Specification::Root do
       endpoint = root.endpoint("/animals", "post")
 
       expect(endpoint.response_body_schema(201)).to eq({
+        "type" => "object",
         "properties" => {
           "status" => {
             "type" => "string",
@@ -137,6 +139,7 @@ RSpec.describe OpenApiParser::Specification::Root do
       endpoint = root.endpoint("/animals", "post")
 
       expect(endpoint.response_body_schema("201")).to eq({
+        "type" => "object",
         "properties" => {
           "status" => {
             "type" => "string",
@@ -151,6 +154,7 @@ RSpec.describe OpenApiParser::Specification::Root do
       endpoint = root.endpoint("/animals", "post")
 
       expect(endpoint.response_body_schema(400)).to eq({
+        "type" => "object",
         "properties" => {
           "status" => {
             "type" => "string",

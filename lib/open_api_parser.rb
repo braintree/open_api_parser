@@ -3,7 +3,7 @@ require "uri"
 require "yaml"
 
 require "addressable/uri"
-require "json_schema"
+require "json-schema"
 
 require "open_api_parser/document"
 require "open_api_parser/file_cache"

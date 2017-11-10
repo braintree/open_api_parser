@@ -2,7 +2,7 @@ swagger: "2.0"
 
 info:
   title: Simple API overview
-  version: 1
+  version: "1"
 
 produces:
   - application/json
@@ -11,6 +11,7 @@ consumes:
 
 definitions:
   createAnimal:
+    type: object
     required:
       - name
       - legs
@@ -21,6 +22,7 @@ definitions:
         type: integer
 
   validResponse:
+    type: object
     required:
       - status
     properties:
@@ -29,7 +31,16 @@ definitions:
         enum:
           - ok
 
+  createSearch:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+
   searchResponse:
+    type: object
     required:
       - name
       - legs
@@ -40,6 +51,7 @@ definitions:
         type: integer
 
   errorResponse:
+    type: object
     required:
       - status
     properties:
@@ -57,16 +69,16 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "/definitions/createAnimal"
+            $ref: "#/definitions/createAnimal"
       responses:
         201:
           description: Valid create
           schema:
-            $ref: "/definitions/validResponse"
+            $ref: "#/definitions/validResponse"
         default:
           description: Error response
           schema:
-            $ref: "/definitions/errorResponse"
+            $ref: "#/definitions/errorResponse"
 
   /animals/{id}:
     get:
@@ -97,13 +109,13 @@ paths:
           type: integer
       responses:
         200:
-          description: Valid create
+          description: Valid get animal
           schema:
-            $ref: "/definitions/validResponse"
+            $ref: "#/definitions/validResponse"
         default:
           description: Error response
           schema:
-            $ref: "/definitions/errorResponse"
+            $ref: "#/definitions/errorResponse"
     delete:
       operationId: deleteAnimal
       parameters:
@@ -113,30 +125,31 @@ paths:
           type: integer
       responses:
         204:
-          description: Valid create
+          description: Valid delete
         default:
           description: Error response
           schema:
-            $ref: "/definitions/errorResponse"
+            $ref: "#/definitions/errorResponse"
 
   /animals/search:
     post:
       operationId: searchAnimals
       parameters:
-        - name: name
+        - name: body
           in: body
           required: true
-          type: string
+          schema:
+            $ref: "#/definitions/createSearch"
       responses:
         200:
           description: Search results
           schema:
-            $ref: "/definitions/searchResponse"
+            $ref: "#/definitions/searchResponse"
         default:
           description: Error response
           schema:
-            $ref: "/definitions/errorResponse"
- 
+            $ref: "#/definitions/errorResponse"
+
   /people/{id}:
     get:
       operationId: getPerson
@@ -147,22 +160,22 @@ paths:
           type: string
       responses:
         200:
-          description: Valid create
+          description: Valid get person
           schema:
-            $ref: "/definitions/validResponse"
+            $ref: "#/definitions/validResponse"
         default:
           description: Error response
           schema:
-            $ref: "/definitions/errorResponse"
+            $ref: "#/definitions/errorResponse"
 
   /headers:
     get:
       operationId: getHeaders
       responses:
         200:
-          description: Valid create
+          description: Valid get headers
           schema:
-            $ref: "/definitions/validResponse"
+            $ref: "#/definitions/validResponse"
           headers:
             X-My-Header:
               type: string
