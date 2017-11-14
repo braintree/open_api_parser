@@ -45,8 +45,8 @@ RSpec.describe OpenApiParser::Specification do
         specification = OpenApiParser::Specification.resolve(path)
 
         expect(specification.raw.fetch("swagger")).to eq("2.0")
-        expect(specification.raw.dig("definitions", "animalHierarchyDescendants")).to eq(expanded_descendents)
-        expect(specification.raw.dig("definitions", "animalHierarchy")).to eq(expanded_hierarchy)
+        expect(specification.raw.fetch("definitions").fetch("animalHierarchyDescendants")).to eq(expanded_descendents)
+        expect(specification.raw.fetch("definitions").fetch("animalHierarchy")).to eq(expanded_hierarchy)
       end
     end
 
