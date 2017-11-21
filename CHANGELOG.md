@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+* Handle circular references during resolution
+
 ## 1.2.2
 
 * Use `json-schema` to validate meta schema
