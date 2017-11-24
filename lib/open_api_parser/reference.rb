@@ -24,38 +24,56 @@ module OpenApiParser
         fail 'Do not try to resolve an already resolved reference.'
       end
       @resolved = true
-      if @raw_uri.start_with?("file:")
-        expand_file(@raw_uri, base_path, file_cache)
-      else
-        expand_pointer(@raw_uri, base_pointer, current_document)
-      end
+
+      ref_uri = Addressable::URI.parse(@raw_uri)
+
+      referenced_document, base_pointer =
+        case ref_uri.scheme
+        when nil, 'file'
+          if ref_uri.path.empty?
+            [current_document, base_pointer]
+          else
+            [resolve_file(ref_uri.path, base_path, file_cache), '']
+          end
+        else
+          fail "$ref with scheme #{ref_uri.scheme} is not supported"
+        end
+
+      fully_expanded, @referrent_document, @referrent_pointer =
+        if !ref_uri.fragment.nil? && ref_uri.fragment != ''
+          resolve_pointer(ref_uri.fragment, base_pointer, referenced_document)
+        else
+          [true, referenced_document, '']
+        end
+
+      fully_expanded
     end
 
     private
 
-    # @return [Boolean] Whether the referrent has been fully expanded.
-    def expand_file(raw_uri, base_path, file_cache)
-      relative_path = raw_uri.split(":").last
-      absolute_path = File.expand_path(File.join("..", relative_path), base_path)
+    # @return [Hash] Resolved raw document
+    def resolve_file(path, base_path, file_cache)
+      absolute_path = File.expand_path(File.join("..", path), base_path)
 
-      @referrent_document = OpenApiParser::Document.resolve(absolute_path, file_cache)
-      @referrent_pointer = ''
-      true
+      OpenApiParser::Document.resolve(absolute_path, file_cache)
     end
 
-    # @return [Boolean] Whether the referrent has been fully expanded.
-    def expand_pointer(raw_uri, base_pointer, current_document)
-      pointer = OpenApiParser::Pointer.new(raw_uri)
+    # @return [Array<Boolean, Hash, String>]
+    #   Whether the referrent has been fully expanded, resolved document, and pointer.
+    def resolve_pointer(raw_pointer, base_pointer, current_document)
+      pointer = OpenApiParser::Pointer.new(raw_pointer)
 
       if pointer.exists_in_path?(base_pointer)
-        @referrent_document = { "$ref" => raw_uri }
-        # @referrent_document is unchanged; pointer stays the same
-        @referrent_pointer = base_pointer
-        true
+        # prevent infinite recursion
+        referrent_document = { "$ref" => '#' + raw_pointer }
+        # referrent_document is simply a new $ref object pointing
+        # at the same fragment; pointer to the document stays the same,
+        # i.e. base_pointer.
+        [true, referrent_document, base_pointer]
       else
-        @referrent_document = pointer.resolve(current_document)
-        @referrent_pointer = base_pointer + pointer.escaped_pointer
-        false
+        referrent_document = pointer.resolve(current_document)
+        referrent_pointer = base_pointer + pointer.escaped_pointer
+        [false, referrent_document, referrent_pointer]
       end
     end
   end

@@ -1,2 +1,4 @@
 person:
   $ref: "file:nested/mixed_person.yaml"
+person_greeting:
+  $ref: "file:nested/mixed_person.yaml#/greeting/hi"
