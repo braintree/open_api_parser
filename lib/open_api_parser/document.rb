@@ -35,33 +35,16 @@ module OpenApiParser
 
     def expand_refs(fragment, cur_path)
       if fragment.is_a?(Hash) && fragment.key?("$ref")
-        ref = fragment["$ref"]
-
-        if ref.start_with?("file:")
-          expand_file(ref)
+        raw_uri = fragment["$ref"]
+        ref = OpenApiParser::Reference.new(raw_uri)
+        fully_resolved = ref.resolve(@path, cur_path, @content, @file_cache)
+        unless fully_resolved
+          expand_refs(ref.referrent_document, ref.referrent_pointer)
         else
-          expand_pointer(ref, cur_path)
+          [ref.referrent_document, ref.referrent_pointer]
         end
       else
         [fragment, cur_path]
-      end
-    end
-
-    def expand_file(ref)
-      relative_path = ref.split(":").last
-      absolute_path = File.expand_path(File.join("..", relative_path), @path)
-
-      Document.resolve(absolute_path, @file_cache)
-    end
-
-    def expand_pointer(ref, cur_path)
-      pointer = OpenApiParser::Pointer.new(ref)
-
-      if pointer.exists_in_path?(cur_path)
-        { "$ref" => ref }
-      else
-        fragment = pointer.resolve(@content)
-        expand_refs(fragment, cur_path + pointer.escaped_pointer)
       end
     end
   end
