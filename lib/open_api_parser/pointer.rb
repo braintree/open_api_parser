@@ -1,5 +1,8 @@
 module OpenApiParser
+  # Responsible for interpreting the fragment portion of a $ref value
+  # as a JSON Pointer and resolving it within a given document.
   class Pointer
+    # @param raw_pointer [String] This can be both with and without a leading '#'.
     def initialize(raw_pointer)
       @raw_pointer = raw_pointer
     end
@@ -17,11 +20,13 @@ module OpenApiParser
     end
 
     def escaped_pointer
-      if @raw_pointer.start_with?("#")
-        Addressable::URI.unencode(@raw_pointer[1..-1])
-      else
-        @raw_pointer
-      end
+      fragment =
+        if @raw_pointer.start_with?("#")
+          @raw_pointer[1..-1]
+        else
+          @raw_pointer
+        end
+      Addressable::URI.unencode(fragment)
     end
 
     private
