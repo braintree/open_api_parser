@@ -29,8 +29,10 @@ module OpenApiParser
       end
       @resolved = true
 
-      ref_uri = Addressable::URI.parse(@raw_uri)
-      base_uri = Addressable::URI.parse(base_path).omit(:fragment).normalize
+      # ref_uri needs to be normalized before being joined, as normalization
+      # affects absolute/relativeness.
+      ref_uri = normalize_file_uri(Addressable::URI.parse(@raw_uri))
+      base_uri = normalize_file_uri(Addressable::URI.parse(base_path)).omit(:fragment).normalize
       resolved_uri = base_uri.join(ref_uri).omit(:fragment).normalize
 
       fully_expanded, referenced_document, base_pointer =
@@ -57,6 +59,28 @@ module OpenApiParser
 
     private
 
+    # Normalizes the given file URI so that when its `path` content is relative,
+    # the URI considers itself relative as well.
+    #
+    # @example
+    #   >> uri = Addressable::URI.parse('file:person.yaml')
+    #   >> uri.path
+    #   => "person.yaml"
+    #   >> uri.absolute?
+    #   => true
+    #   >> normalize_file_uri(uri).absolute?
+    #   => false
+    #   >> normalize_file_uri(uri).path
+    #   => "person.yaml"
+    # @param uri [Addressable::URI]
+    # @return [Addressable::URI]
+    def normalize_file_uri(uri)
+      if uri.scheme == 'file' && uri.host.nil?
+        uri.merge(scheme: nil)
+      else
+        uri
+      end
+    end
 
     # @param raw_pointer [String] Pointer to resolve.
     # @param base_pointer [String] The location of the $ref being resolved.

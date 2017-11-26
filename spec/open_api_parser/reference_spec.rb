@@ -33,6 +33,18 @@ RSpec.describe OpenApiParser::Reference do
     end
 
     describe "supported schemes" do
+      it "supports the file scheme with relative path" do
+        ref = OpenApiParser::Reference.new('file:nested/person.yaml')
+        ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
+        expect(ref.referrent_document).to eq({"name" => "Drew"})
+      end
+
+      it "supports the file scheme with absolute path" do
+        ref = OpenApiParser::Reference.new('file:' + absolute('spec/resources/nested/person.yaml'))
+        ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
+        expect(ref.referrent_document).to eq({"name" => "Drew"})
+      end
+
       it "interprets an empty scheme as a file path" do
         ref = OpenApiParser::Reference.new('nested/person.yaml')
         ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
