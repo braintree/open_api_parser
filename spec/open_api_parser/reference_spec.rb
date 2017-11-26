@@ -191,5 +191,73 @@ RSpec.describe OpenApiParser::Reference do
         end
       end
     end
+
+    describe 'its return value' do
+      let(:document) { STANDARD_DOCUMENT }
+
+      context "given an empty ref path" do
+        let(:base_path) { cwd_relative('spec/resources/standard.yaml') }
+        let(:ref_path) { '' }
+
+        [
+          # base pointer, ref pointer, expected
+          ['', '', false],
+          ['', '#/foo', false],
+          ['/base_pointer', '', false],
+          ['/base_pointer', '#/foo', false],
+          ['/base_pointer', '#/base_pointer', true],
+        ].each do |base_pointer,ref_pointer,expected|
+          it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
+            ref_uri = ref_path + ref_pointer
+            ref = OpenApiParser::Reference.new(ref_uri)
+            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+          end
+        end
+      end
+
+      context "given a ref path same as the base path" do
+        let(:base_path) { cwd_relative('spec/resources/standard.yaml') }
+        let(:ref_path) { 'standard.yaml' }
+
+        [
+          # base pointer, ref pointer, expected
+          ['', '', false],
+          ['', '#/foo', false],
+          ['/base_pointer', '', false],
+          ['/base_pointer', '#/foo', false],
+          ['/base_pointer', '#/base_pointer', true],
+        ].each do |base_pointer,ref_pointer,expected|
+          it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
+            ref_uri = ref_path + ref_pointer
+            ref = OpenApiParser::Reference.new(ref_uri)
+            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+          end
+        end
+      end
+
+      context "given a ref path different than the base path" do
+        let(:base_path) { cwd_relative('spec/resources/standard.yaml') }
+        let(:ref_path) { 'another_standard.yaml' }
+
+        before do
+          expect(YAML).to(
+            receive(:load_file).with(cwd_relative("spec/resources/another_standard.yaml")).and_return(document))
+        end
+        [
+          # base pointer, ref pointer, expected
+          ['', '', true],
+          ['', '#/foo', true],
+          ['/base_pointer', '', true],
+          ['/base_pointer', '#/foo', true],
+          ['/base_pointer', '#/base_pointer', true],
+        ].each do |base_pointer,ref_pointer,expected|
+          it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
+            ref_uri = ref_path + ref_pointer
+            ref = OpenApiParser::Reference.new(ref_uri)
+            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+          end
+        end
+      end
+    end
   end
 end
