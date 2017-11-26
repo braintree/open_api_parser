@@ -76,7 +76,7 @@ module OpenApiParser
         [true, referrent_document, base_pointer]
       else
         referrent_document = pointer.resolve(within_document)
-        referrent_pointer = base_pointer + pointer.escaped_pointer
+        referrent_pointer = pointer.escaped_pointer
         [fully_expanded, referrent_document, referrent_pointer]
       end
     end
