@@ -98,6 +98,39 @@ RSpec.describe OpenApiParser::Reference do
     end
 
     describe "pointer resolution" do
+      context "given a deeply nested document" do
+        let(:base_path) { cwd_relative("spec/resources/standard.yaml") }
+        let(:ref_path) { "" }
+        let(:document) {
+          {
+            "base" => "hello",
+            "parent" => {
+              "base" => {
+              },
+              "b" => "parent b",
+              "base-2" => "parent base-2",
+            }
+          }
+        }
+        [
+          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
+          ["/parent/base", "#/parent", {"$ref" => "#/parent"}, "/parent/base"],
+          ["/parent/base", "#/base", "hello", "/base"],
+          ["/parent/base", "#/parent/b", "parent b", "/parent/b"],
+          ["/parent/base", "#/parent/base", {"$ref" => "#/parent/base"}, "/parent/base"],
+          ["/parent/base", "#/parent/base-2", "parent base-2", "/parent/base-2"],
+        ].each do |base_pointer,ref_pointer,expected_doc,expected_pointer|
+          it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
+            ref_uri = ref_path + ref_pointer
+            ref = OpenApiParser::Reference.new(ref_uri)
+            ref.resolve(base_path, base_pointer, document, file_cache)
+
+            expect(ref.referrent_document).to eq(expected_doc)
+            expect(ref.referrent_pointer).to eq(expected_pointer)
+          end
+        end
+      end
+
       context "given a $ref with an empty path" do
         let(:document) { STANDARD_DOCUMENT }
         let(:base_path) { cwd_relative("spec/resources/standard.yaml") }

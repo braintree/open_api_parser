@@ -63,7 +63,7 @@ module OpenApiParser
     def resolve_pointer(raw_pointer, base_pointer, current_document)
       pointer = OpenApiParser::Pointer.new(raw_pointer)
 
-      if pointer.exists_in_path?(base_pointer)
+      if pointer.equal_or_ancestor_of?(base_pointer)
         # prevent infinite recursion
         referrent_document = { "$ref" => '#' + raw_pointer }
         # referrent_document is simply a new $ref object pointing

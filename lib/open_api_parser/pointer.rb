@@ -15,8 +15,13 @@ module OpenApiParser
       end
     end
 
-    def exists_in_path?(path)
-      path.include?(escaped_pointer)
+    # Is the other pointer either the same as this one or a descendant?
+    def equal_or_ancestor_of?(other_pointer)
+      other_tokens = OpenApiParser::Pointer.new(other_pointer).escaped_pointer.split("/")
+      self_tokens = escaped_pointer.split("/")
+      perhaps_common_prefix = other_tokens[0...self_tokens.length]
+      # if the common prefix equals myself, I'm an ancestor of the other pointer
+      perhaps_common_prefix == self_tokens
     end
 
     def escaped_pointer
