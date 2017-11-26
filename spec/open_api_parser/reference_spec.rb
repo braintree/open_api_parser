@@ -82,6 +82,7 @@ RSpec.describe OpenApiParser::Reference do
 
     describe "path resolution" do
       [
+        # ref_uri, base_uri, expected
         ["nested/person.yaml", cwd_relative("spec/resources/valid_spec.yaml")],
         ["nested/person.yaml", absolute("spec/resources/valid_spec.yaml")],
         [absolute("spec/resources/nested/person.yaml"), cwd_relative("spec/resources/valid_spec.yaml")],
@@ -93,6 +94,16 @@ RSpec.describe OpenApiParser::Reference do
             ref.resolve(base_uri, '', {}, file_cache)
             expect(ref.referrent_document).to eq({"name" => "Drew"})
           end
+        end
+      end
+
+      context "given a $ref path the same as the base path" do
+        it "reuses the current document" do
+          expect(YAML).to_not receive(:load)
+          document = {"current" => true}
+          ref = OpenApiParser::Reference.new('person.yaml')
+          ref.resolve('person.yaml', '', document, file_cache)
+          expect(ref.referrent_document).to eq(document)
         end
       end
     end
@@ -159,6 +170,36 @@ RSpec.describe OpenApiParser::Reference do
           expect do
             ref.resolve('', '', document, file_cache)
           end.to raise_error(KeyError)
+        end
+      end
+
+      context "given a $ref whose path is the same as base_uri" do
+        let(:document) { STANDARD_DOCUMENT }
+        let(:base_path) { cwd_relative("spec/resources/standard.yaml") }
+        let(:ref_path) { "standard.yaml" }
+
+        before do
+          expect(YAML).to_not(
+            receive(:load_file).with(base_path))
+        end
+
+        [
+          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
+          ["", "", STANDARD_DOCUMENT, ""],
+          ["", "#/foo", "bar", "/foo"],
+          ["", "#/base_pointer", "boo", "/base_pointer"],
+          ["/base_pointer", "", STANDARD_DOCUMENT, ""],
+          ["/base_pointer", "#/foo", "bar", "/foo"],
+          ["/base_pointer", "#/base_pointer", {"$ref" => "#/base_pointer"}, "/base_pointer"],
+        ].each do |base_pointer,ref_pointer,expected_doc,expected_pointer|
+          it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
+            ref_uri = ref_path + ref_pointer
+            ref = OpenApiParser::Reference.new(ref_uri)
+            ref.resolve(base_path, base_pointer, document, file_cache)
+
+            expect(ref.referrent_document).to eq(expected_doc)
+            expect(ref.referrent_pointer).to eq(expected_pointer)
+          end
         end
       end
 

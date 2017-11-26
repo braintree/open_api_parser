@@ -18,6 +18,10 @@ module OpenApiParser
     # Sets referrent_document and referrent_pointer to the resolved
     # raw specification and pointer, respectively.
     #
+    # @param base_path [String] Location of the document where the $ref originates.
+    # @param base_pointer [String] Location of the $ref within the document.
+    # @param current_document [Hash] Document where the $ref originates.
+    # @param file_cache [OpenApiParser::FileCache] File cache instance.
     # @return [Boolean] Whether the referrent has been fully expanded.
     def resolve(base_path, base_pointer, current_document, file_cache)
       if @resolved
@@ -26,14 +30,16 @@ module OpenApiParser
       @resolved = true
 
       ref_uri = Addressable::URI.parse(@raw_uri)
+      base_uri = Addressable::URI.parse(base_path).omit(:fragment).normalize
+      resolved_uri = base_uri.join(ref_uri).omit(:fragment).normalize
 
       fully_expanded, referenced_document, base_pointer =
-        case ref_uri.scheme
+        case resolved_uri.scheme
         when nil, 'file'
-          if ref_uri.path.empty?
+          if base_uri == resolved_uri
             [false, current_document, base_pointer]
           else
-            [true, resolve_file(ref_uri.path, base_path, file_cache), '']
+            [true, resolve_file(resolved_uri, file_cache), '']
           end
         else
           fail "$ref with scheme #{ref_uri.scheme} is not supported"
@@ -51,11 +57,11 @@ module OpenApiParser
 
     private
 
+    # @param resolved_uri [Addressable::URI] URI of the referenced document.
+    # @param file_cache [OpenApiParser::FileCache] File cache instance.
     # @return [Hash] Resolved raw document
-    def resolve_file(path, base_path, file_cache)
-      absolute_path = File.expand_path(File.join("..", path), base_path)
-
-      OpenApiParser::Document.resolve(absolute_path, file_cache)
+    def resolve_file(resolved_uri, file_cache)
+      OpenApiParser::Document.resolve(resolved_uri.path, file_cache)
     end
 
     # @param raw_pointer [String] Pointer to resolve.
