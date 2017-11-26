@@ -39,7 +39,7 @@ module OpenApiParser
           if base_uri == resolved_uri
             [false, current_document, base_pointer]
           else
-            [true, resolve_file(resolved_uri, file_cache), '']
+            [true, OpenApiParser::Document.resolve(resolved_uri.path, file_cache), '']
           end
         else
           fail "$ref with scheme #{ref_uri.scheme} is not supported"
@@ -57,12 +57,6 @@ module OpenApiParser
 
     private
 
-    # @param resolved_uri [Addressable::URI] URI of the referenced document.
-    # @param file_cache [OpenApiParser::FileCache] File cache instance.
-    # @return [Hash] Resolved raw document
-    def resolve_file(resolved_uri, file_cache)
-      OpenApiParser::Document.resolve(resolved_uri.path, file_cache)
-    end
 
     # @param raw_pointer [String] Pointer to resolve.
     # @param base_pointer [String] The location of the $ref being resolved.
