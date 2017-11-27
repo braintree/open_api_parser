@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe OpenApiParser::Specification::Root do
+RSpec.describe OpenApiParser::Specification::Endpoint do
   def root
     @root ||= begin
       path = File.expand_path("../../../resources/valid_spec.yaml", __FILE__)
