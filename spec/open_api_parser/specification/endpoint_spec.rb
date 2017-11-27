@@ -8,6 +8,20 @@ RSpec.describe OpenApiParser::Specification::Endpoint do
     end
   end
 
+  describe "path" do
+    it "returns the path of the matched operation item" do
+      endpoint = root.endpoint("/animals/1", "get")
+      expect(endpoint.path).to eq "/animals/{id}"
+    end
+  end
+
+  describe "method" do
+    it "returns the method of the matched operation item" do
+      endpoint = root.endpoint("/animals", "POST")
+      expect(endpoint.method).to eq "post"
+    end
+  end
+
   describe "body_schema" do
     it "returns the schema for the body" do
       endpoint = root.endpoint("/animals", "post")
