@@ -1,10 +1,24 @@
 require "spec_helper"
 
-RSpec.describe OpenApiParser::Specification::Root do
+RSpec.describe OpenApiParser::Specification::Endpoint do
   def root
     @root ||= begin
       path = File.expand_path("../../../resources/valid_spec.yaml", __FILE__)
       OpenApiParser::Specification.resolve(path)
+    end
+  end
+
+  describe "path" do
+    it "returns the path of the matched operation item" do
+      endpoint = root.endpoint("/animals/1", "get")
+      expect(endpoint.path).to eq "/animals/{id}"
+    end
+  end
+
+  describe "method" do
+    it "returns the method of the matched operation item" do
+      endpoint = root.endpoint("/animals", "POST")
+      expect(endpoint.method).to eq "post"
     end
   end
 

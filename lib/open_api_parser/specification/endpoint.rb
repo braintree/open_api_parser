@@ -8,6 +8,8 @@ module OpenApiParser
         "required"
       ]
 
+      attr_reader :path
+      attr_reader :method
       attr_reader :raw
 
       def initialize(path, method, raw)
