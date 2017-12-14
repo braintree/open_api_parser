@@ -37,11 +37,12 @@ module OpenApiParser
       if fragment.is_a?(Hash) && fragment.key?("$ref")
         raw_uri = fragment["$ref"]
         ref = OpenApiParser::Reference.new(raw_uri)
-        fully_resolved = ref.resolve(@path, current_pointer, @content, @file_cache)
+        fully_resolved, referrent_document, referrent_pointer =
+          ref.resolve(@path, current_pointer, @content, @file_cache)
         unless fully_resolved
-          expand_refs(ref.referrent_document, ref.referrent_pointer)
+          expand_refs(referrent_document, referrent_pointer)
         else
-          [ref.referrent_document, ref.referrent_pointer]
+          [referrent_document, referrent_pointer]
         end
       else
         [fragment, current_pointer]

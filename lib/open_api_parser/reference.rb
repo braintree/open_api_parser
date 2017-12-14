@@ -1,32 +1,24 @@
 module OpenApiParser
   class Reference
-    # The resolved document. This gets set only after calling `#resolve`.
-    attr_reader :referrent_document
-
-    # Pointer of the referrent_document if it's embedded in a larger document.
-    # This gets set only after calling `#resolve`.
-    # Empty string means the whole document.
-    attr_reader :referrent_pointer
-
     def initialize(raw_uri)
       @raw_uri = raw_uri
-      @resolved = false
     end
 
-    # Sets referrent_document and referrent_pointer to the resolved
-    # raw specification and pointer, respectively.
+    # Resolve this reference in the given context.
+    #
+    # Returns a three-element array of:
+    #
+    # - Whether the referrent has been fully expanded
+    # - The resolved document
+    # - Pointer of the document if it's embedded in a larger document.
+    #   Empty string means the whole document.
     #
     # @param base_path [String] Location of the document where the $ref originates.
     # @param base_pointer [String] Location of the $ref within the document.
     # @param current_document [Hash] Document where the $ref originates.
     # @param file_cache [OpenApiParser::FileCache] File cache instance.
-    # @return [Boolean] Whether the referrent has been fully expanded.
+    # @return [Array<Boolean,Hash,String>]
     def resolve(base_path, base_pointer, current_document, file_cache)
-      if @resolved
-        fail 'Do not try to resolve an already resolved reference.'
-      end
-      @resolved = true
-
       # ref_uri needs to be normalized before being joined, as normalization
       # affects absolute/relativeness.
       ref_uri = normalize_file_uri(Addressable::URI.parse(@raw_uri))
@@ -45,14 +37,11 @@ module OpenApiParser
           fail "$ref with scheme #{ref_uri.scheme} is not supported"
         end
 
-      fully_expanded, @referrent_document, @referrent_pointer =
-        if !ref_uri.fragment.nil? && ref_uri.fragment != ''
-          resolve_pointer(ref_uri.fragment, base_pointer, referenced_document, fully_expanded)
-        else
-          [fully_expanded, referenced_document, '']
-        end
-
-      fully_expanded
+      if !ref_uri.fragment.nil? && ref_uri.fragment != ''
+        resolve_pointer(ref_uri.fragment, base_pointer, referenced_document, fully_expanded)
+      else
+        [fully_expanded, referenced_document, '']
+      end
     end
 
     private

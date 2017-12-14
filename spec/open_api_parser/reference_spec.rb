@@ -23,32 +23,31 @@ RSpec.describe OpenApiParser::Reference do
   include PathHelpers
 
   describe "#resolve" do
-    it "cannot be called twice" do
+    it "can be called repeatedly" do
       ref = OpenApiParser::Reference.new('')
-      resolve = -> { ref.resolve('', '', {}, file_cache) }
-      resolve.call
       expect do
-        resolve.call
-      end.to raise_error(/already resolved/)
+        ref.resolve("http:", '', {}, file_cache)
+      end.to raise_error(Addressable::URI::InvalidURIError)
+      expect(ref.resolve('', '', {}, file_cache)).to eq [false, {}, ""]
     end
 
     describe "supported schemes" do
       it "supports the file scheme with relative path" do
         ref = OpenApiParser::Reference.new('file:nested/person.yaml')
-        ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
-        expect(ref.referrent_document).to eq({"name" => "Drew"})
+        _, referrent_doc, _ = ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
+        expect(referrent_doc).to eq({"name" => "Drew"})
       end
 
       it "supports the file scheme with absolute path" do
         ref = OpenApiParser::Reference.new('file:' + absolute('spec/resources/nested/person.yaml'))
-        ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
-        expect(ref.referrent_document).to eq({"name" => "Drew"})
+        _, referrent_doc, _ = ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
+        expect(referrent_doc).to eq({"name" => "Drew"})
       end
 
       it "interprets an empty scheme as a file path" do
         ref = OpenApiParser::Reference.new('nested/person.yaml')
-        ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
-        expect(ref.referrent_document).to eq({"name" => "Drew"})
+        _, referrent_doc, _ = ref.resolve(cwd_relative("spec/resources/valid_spec.yaml"), '', {}, file_cache)
+        expect(referrent_doc).to eq({"name" => "Drew"})
       end
 
       it "does not support URI schemes other than file" do
@@ -78,8 +77,8 @@ RSpec.describe OpenApiParser::Reference do
       it "does not check for base uri's existence" do
         ref = OpenApiParser::Reference.new('nested/person.yaml')
         bad_base_path = cwd_relative("spec/resources/this-should-never-exist.lmay")
-        ref.resolve(bad_base_path, '', {}, file_cache)
-        expect(ref.referrent_document).to eq({"name" => "Drew"})
+        _, referrent_doc, _ = ref.resolve(bad_base_path, '', {}, file_cache)
+        expect(referrent_doc).to eq({"name" => "Drew"})
       end
     end
 
@@ -103,8 +102,8 @@ RSpec.describe OpenApiParser::Reference do
         context "given $ref #{ref_uri} and base_uri #{base_uri}" do
           it "resolves successfully" do
             ref = OpenApiParser::Reference.new(ref_uri)
-            ref.resolve(base_uri, '', {}, file_cache)
-            expect(ref.referrent_document).to eq({"name" => "Drew"})
+            _, referrent_doc, _ = ref.resolve(base_uri, '', {}, file_cache)
+            expect(referrent_doc).to eq({"name" => "Drew"})
           end
         end
       end
@@ -114,8 +113,8 @@ RSpec.describe OpenApiParser::Reference do
           expect(YAML).to_not receive(:load)
           document = {"current" => true}
           ref = OpenApiParser::Reference.new('person.yaml')
-          ref.resolve('person.yaml', '', document, file_cache)
-          expect(ref.referrent_document).to eq(document)
+          _, referrent_doc, _ = ref.resolve('person.yaml', '', document, file_cache)
+          expect(referrent_doc).to eq(document)
         end
       end
     end
@@ -146,10 +145,10 @@ RSpec.describe OpenApiParser::Reference do
           it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            ref.resolve(base_path, base_pointer, document, file_cache)
+            _, referrent_doc, referrent_pointer = ref.resolve(base_path, base_pointer, document, file_cache)
 
-            expect(ref.referrent_document).to eq(expected_doc)
-            expect(ref.referrent_pointer).to eq(expected_pointer)
+            expect(referrent_doc).to eq(expected_doc)
+            expect(referrent_pointer).to eq(expected_pointer)
           end
         end
       end
@@ -170,10 +169,10 @@ RSpec.describe OpenApiParser::Reference do
           it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            ref.resolve(base_path, base_pointer, document, file_cache)
+            _, referrent_doc, referrent_pointer = ref.resolve(base_path, base_pointer, document, file_cache)
 
-            expect(ref.referrent_document).to eq(expected_doc)
-            expect(ref.referrent_pointer).to eq(expected_pointer)
+            expect(referrent_doc).to eq(expected_doc)
+            expect(referrent_pointer).to eq(expected_pointer)
           end
         end
 
@@ -207,10 +206,10 @@ RSpec.describe OpenApiParser::Reference do
           it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            ref.resolve(base_path, base_pointer, document, file_cache)
+            _, referrent_doc, referrent_pointer = ref.resolve(base_path, base_pointer, document, file_cache)
 
-            expect(ref.referrent_document).to eq(expected_doc)
-            expect(ref.referrent_pointer).to eq(expected_pointer)
+            expect(referrent_doc).to eq(expected_doc)
+            expect(referrent_pointer).to eq(expected_pointer)
           end
         end
       end
@@ -236,16 +235,16 @@ RSpec.describe OpenApiParser::Reference do
           it "resolves '#{ref_pointer}' as expected when base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            ref.resolve(base_path, base_pointer, document, file_cache)
+            _, referrent_doc, referrent_pointer = ref.resolve(base_path, base_pointer, document, file_cache)
 
-            expect(ref.referrent_document).to eq(expected_doc)
-            expect(ref.referrent_pointer).to eq(expected_pointer)
+            expect(referrent_doc).to eq(expected_doc)
+            expect(referrent_pointer).to eq(expected_pointer)
           end
         end
       end
     end
 
-    describe 'its return value' do
+    describe 'return value for fully_expanded' do
       let(:document) { STANDARD_DOCUMENT }
 
       context "given an empty ref path" do
@@ -263,7 +262,8 @@ RSpec.describe OpenApiParser::Reference do
           it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+            fully_expanded, *_rest = ref.resolve(base_path, base_pointer, document, file_cache)
+            expect(fully_expanded).to be expected
           end
         end
       end
@@ -283,7 +283,8 @@ RSpec.describe OpenApiParser::Reference do
           it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+            fully_expanded, *_rest = ref.resolve(base_path, base_pointer, document, file_cache)
+            expect(fully_expanded).to be expected
           end
         end
       end
@@ -307,7 +308,8 @@ RSpec.describe OpenApiParser::Reference do
           it "is #{expected} when $ref pointer is '#{ref_pointer}' and base pointer is '#{base_pointer}'" do
             ref_uri = ref_path + ref_pointer
             ref = OpenApiParser::Reference.new(ref_uri)
-            expect(ref.resolve(base_path, base_pointer, document, file_cache)).to be expected
+            fully_expanded, *_rest = ref.resolve(base_path, base_pointer, document, file_cache)
+            expect(fully_expanded).to be expected
           end
         end
       end
