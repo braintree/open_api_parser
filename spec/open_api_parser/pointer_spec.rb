@@ -32,9 +32,7 @@ RSpec.describe OpenApiParser::Pointer do
       }
 
       resolutions.each do |pointer, expected|
-        # with the pound sign
         expect(OpenApiParser::Pointer.new(pointer).resolve(DOCUMENT)).to eq(expected)
-        # without the pound sign
         expect(OpenApiParser::Pointer.new(pointer[1..-1]).resolve(DOCUMENT)).to eq(expected)
       end
     end
@@ -56,9 +54,7 @@ RSpec.describe OpenApiParser::Pointer do
       }
 
       resolutions.each do |pointer, expected|
-        # with the pound sign
         expect(OpenApiParser::Pointer.new(pointer).resolve(DOCUMENT)).to eq(expected)
-        # without the pound sign
         expect(OpenApiParser::Pointer.new(pointer[1..-1]).resolve(DOCUMENT)).to eq(expected)
       end
     end

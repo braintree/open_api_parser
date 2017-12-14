@@ -17,9 +17,7 @@ RSpec.describe OpenApiParser::Reference do
       @project_root ||= File.expand_path(File.join('..', '..', '..'), __FILE__)
     end
   end
-  # Make helpers available in `describe` blocks
   extend PathHelpers
-  # Make helpers available in `it` blocks
   include PathHelpers
 
   describe "#resolve" do
@@ -58,7 +56,6 @@ RSpec.describe OpenApiParser::Reference do
       end
     end
 
-    # document to use as the current document
     STANDARD_DOCUMENT = {
       "foo" => "bar",
       "base_pointer" => "boo",
@@ -93,7 +90,6 @@ RSpec.describe OpenApiParser::Reference do
 
     describe "path resolution" do
       [
-        # ref_uri, base_uri, expected
         ["nested/person.yaml", cwd_relative("spec/resources/valid_spec.yaml")],
         ["nested/person.yaml", absolute("spec/resources/valid_spec.yaml")],
         [absolute("spec/resources/nested/person.yaml"), cwd_relative("spec/resources/valid_spec.yaml")],
@@ -135,7 +131,6 @@ RSpec.describe OpenApiParser::Reference do
           }
         }
         [
-          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
           ["/parent/base", "#/parent", {"$ref" => "#/parent"}, "/parent/base"],
           ["/parent/base", "#/base", "hello", "/base"],
           ["/parent/base", "#/parent/b", "parent b", "/parent/b"],
@@ -158,7 +153,6 @@ RSpec.describe OpenApiParser::Reference do
         let(:base_path) { cwd_relative("spec/resources/standard.yaml") }
         let(:ref_path) { "" }
         [
-          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
           ["", "", STANDARD_DOCUMENT, ""],
           ["", "#/foo", "bar", "/foo"],
           ["", "#/base_pointer", "boo", "/base_pointer"],
@@ -195,7 +189,6 @@ RSpec.describe OpenApiParser::Reference do
         end
 
         [
-          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
           ["", "", STANDARD_DOCUMENT, ""],
           ["", "#/foo", "bar", "/foo"],
           ["", "#/base_pointer", "boo", "/base_pointer"],
@@ -224,7 +217,6 @@ RSpec.describe OpenApiParser::Reference do
             receive(:load_file).with(cwd_relative("spec/resources/another_standard.yaml")).and_return(document))
         end
         [
-          # base pointer, ref pointer, expected referrent doc, expected referrent pointer
           ["", "", STANDARD_DOCUMENT, ""],
           ["", "#/foo", "bar", "/foo"],
           ["", "#/base_pointer", "boo", "/base_pointer"],
@@ -252,7 +244,6 @@ RSpec.describe OpenApiParser::Reference do
         let(:ref_path) { '' }
 
         [
-          # base pointer, ref pointer, expected
           ['', '', false],
           ['', '#/foo', false],
           ['/base_pointer', '', false],
@@ -273,7 +264,6 @@ RSpec.describe OpenApiParser::Reference do
         let(:ref_path) { 'standard.yaml' }
 
         [
-          # base pointer, ref pointer, expected
           ['', '', false],
           ['', '#/foo', false],
           ['/base_pointer', '', false],
@@ -298,7 +288,6 @@ RSpec.describe OpenApiParser::Reference do
             receive(:load_file).with(cwd_relative("spec/resources/another_standard.yaml")).and_return(document))
         end
         [
-          # base pointer, ref pointer, expected
           ['', '', true],
           ['', '#/foo', true],
           ['/base_pointer', '', true],

@@ -1,6 +1,5 @@
 module OpenApiParser
   class Pointer
-    # @param raw_pointer [String] This can be both with and without a leading '#'.
     def initialize(raw_pointer)
       @raw_pointer = raw_pointer
     end
@@ -13,12 +12,10 @@ module OpenApiParser
       end
     end
 
-    # Is the other pointer either the same as this one or a descendant?
     def equal_or_ancestor_of?(other_pointer)
       other_tokens = OpenApiParser::Pointer.new(other_pointer).escaped_pointer.split("/")
       self_tokens = escaped_pointer.split("/")
       perhaps_common_prefix = other_tokens[0...self_tokens.length]
-      # if the common prefix equals myself, I'm an ancestor of the other pointer
       perhaps_common_prefix == self_tokens
     end
 
