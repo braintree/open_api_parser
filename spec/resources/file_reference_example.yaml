@@ -1,2 +1,4 @@
 person:
   $ref: "file:nested/person.yaml"
+person_without_scheme:
+  $ref: "nested/person.yaml"

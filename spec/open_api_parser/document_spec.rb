@@ -19,6 +19,10 @@ RSpec.describe OpenApiParser::Document do
         expect(json["person"]).to eq({
           "name" => "Drew"
         })
+
+        expect(json["person_without_scheme"]).to eq({
+          "name" => "Drew"
+        })
       end
 
       it "resolves a mix of pointers and file references" do
@@ -32,6 +36,8 @@ RSpec.describe OpenApiParser::Document do
         expect(json["person"]["stats"]).to eq({
           "age" => 34
         })
+
+        expect(json["person_greeting"]).to eq("Drew")
       end
     end
 

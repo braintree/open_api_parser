@@ -12,16 +12,21 @@ module OpenApiParser
       end
     end
 
-    def exists_in_path?(path)
-      path.include?(escaped_pointer)
+    def equal_or_ancestor_of?(other_pointer)
+      other_tokens = OpenApiParser::Pointer.new(other_pointer).escaped_pointer.split("/")
+      self_tokens = escaped_pointer.split("/")
+      perhaps_common_prefix = other_tokens[0...self_tokens.length]
+      perhaps_common_prefix == self_tokens
     end
 
     def escaped_pointer
-      if @raw_pointer.start_with?("#")
-        Addressable::URI.unencode(@raw_pointer[1..-1])
-      else
-        @raw_pointer
-      end
+      fragment =
+        if @raw_pointer.start_with?("#")
+          @raw_pointer[1..-1]
+        else
+          @raw_pointer
+        end
+      Addressable::URI.unencode(fragment)
     end
 
     private
