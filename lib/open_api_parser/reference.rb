@@ -1,6 +1,4 @@
 module OpenApiParser
-  # Responsible for interpreting a $ref value and
-  # resolving it to a raw specification given a base URI.
   class Reference
     # The resolved document. This gets set only after calling `#resolve`.
     attr_reader :referrent_document

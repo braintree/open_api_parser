@@ -1,6 +1,4 @@
 module OpenApiParser
-  # Responsible for interpreting the fragment portion of a $ref value
-  # as a JSON Pointer and resolving it within a given document.
   class Pointer
     # @param raw_pointer [String] This can be both with and without a leading '#'.
     def initialize(raw_pointer)
