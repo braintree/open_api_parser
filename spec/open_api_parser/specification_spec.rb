@@ -3,11 +3,29 @@ require "spec_helper"
 RSpec.describe OpenApiParser::Specification do
   describe "self.resolve" do
     context "valid specification" do
-      it "resolves successfully" do
-        path = File.expand_path("../../resources/valid_spec.yaml", __FILE__)
-        specification = OpenApiParser::Specification.resolve(path)
+      let(:path) { File.expand_path("../../resources/valid_spec.yaml", __FILE__) }
+      let(:specification) { OpenApiParser::Specification.resolve(path) }
 
+      it "resolves successfully" do
         expect(specification.raw.fetch("swagger")).to eq("2.0")
+      end
+
+      it "properly resolves matching substring references" do
+        expanded_info_response = {
+          "type" => "object",
+          "properties" => {
+            "info" => {
+              "type" => "object",
+              "properties" => {
+                "name" => {
+                  "type" => "string"
+                }
+              }
+            }
+          }
+        }
+
+        expect(specification.raw.fetch("definitions").fetch("personInfoResponse")).to eq(expanded_info_response)
       end
     end
 
