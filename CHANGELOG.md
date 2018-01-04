@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.0-dev
+
 ## 1.3.0
 
 * Expose `path` and `method` on endpoints
