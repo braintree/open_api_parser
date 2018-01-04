@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0-dev
+## 1.3.0
 
 * Expose `path` and `method` on endpoints
 * Fix issue where references that matched a substring of the path were not being resolved
