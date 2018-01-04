@@ -1,3 +1,3 @@
 module OpenApiParser
-  VERSION = "1.3.1".freeze
+  VERSION = "1.3.0-dev".freeze
 end

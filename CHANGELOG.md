@@ -1,13 +1,10 @@
 # Changelog
 
-## 1.3.1
-
-* Fix issue where references that matched a substring of the path were not being resolved
-  (e.g. "/definitions/PersonInfo" in "/definitions/PersonInfoResponse/schema")
-
 ## 1.3.0-dev
 
 * Expose `path` and `method` on endpoints
+* Fix issue where references that matched a substring of the path were not being resolved
+  (e.g. "/definitions/PersonInfo" in "/definitions/PersonInfoResponse/schema")
 
 ## 1.2.3
 

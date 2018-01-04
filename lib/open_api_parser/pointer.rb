@@ -13,9 +13,6 @@ module OpenApiParser
     end
 
     def exists_in_path?(path)
-      # Trailing slash added to prevent false positives where the pointer
-      # matches a substring in the path for a different pointer.
-      # (e.g. "/definitions/PersonInfo" in "/definitions/PersonInfoResponse/schema")
       path.include?("#{escaped_pointer}/")
     end
 
