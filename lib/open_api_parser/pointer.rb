@@ -13,7 +13,7 @@ module OpenApiParser
     end
 
     def exists_in_path?(path)
-      path.include?(escaped_pointer)
+      path.include?("#{escaped_pointer}/")
     end
 
     def escaped_pointer

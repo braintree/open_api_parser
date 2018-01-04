@@ -39,6 +39,18 @@ definitions:
       name:
         type: string
 
+  personInfo:
+    type: object
+    properties:
+      name:
+        type: string
+
+  personInfoResponse:
+    type: object
+    properties:
+      info:
+        $ref: '#/definitions/personInfo'
+
   searchResponse:
     type: object
     required:
@@ -162,7 +174,7 @@ paths:
         200:
           description: Valid get person
           schema:
-            $ref: "#/definitions/validResponse"
+            $ref: "#/definitions/personInfoResponse"
         default:
           description: Error response
           schema:
